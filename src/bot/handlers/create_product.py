@@ -55,12 +55,13 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
             if not count.is_integer():
                 await message.answer("Пожалуйста введите целое число")
                 return
+            await message.answer("Пришлите постер:")
             await state.update_data(count = count)
             await state.set_state(AddProduct.waiting_for_poster)
         except ValueError:
             await message.answer("Пожалуйста, введите корректное количество (число):")
             
-    @router.message(AddProduct.waiting_for_count, F.photo)
+    @router.message(AddProduct.waiting_for_poster, F.photo)
     async def get_photo(message: Message, state: FSMContext):
         photo = message.photo[-1]
         photo_id = photo.file_id
@@ -74,12 +75,12 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
         product = await add_data(data, download_path)
         await message.answer_photo(
             FSInputFile(product.poster),
-            (
-                f"Продукт под ID {product.id} успешно добавлен\n"
-                f"Название продукции {product.title}\n"
-                f"Цена за еденицу продукции {product.price}\n"
-                f"Количество продукции на складе {product.count}\n"
-                f"Доп информация:\n"
+            caption = (
+                f"Продукт под ID <b>{product.id}</b> успешно добавлен\n"
+                f"Название продукции <b>{product.title}</b>\n"
+                f"Цена за еденицу продукции <b>{product.price}</b>\n"
+                f"Количество продукции на складе <b>{product.count}</b>\n\n"
+                f"DEBUG:\n"
                 f"Путь к постеру: {product.poster}"
             )
         )
@@ -89,7 +90,7 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
         return await manager.create_product(
             ProductCreateSchema(
                 **data,
-                poster = download_path
+                poster = str(download_path)
             )
         )
     

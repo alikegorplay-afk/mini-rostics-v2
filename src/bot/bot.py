@@ -24,8 +24,7 @@ async def main(session_maker: async_sessionmaker[AsyncSession]):
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
     
-    for router in init(session_maker):
-        dp.include_router(router)
+    dp.include_routers(*init(session_maker))
     
     try:
         await bot.delete_webhook(drop_pending_updates=True)

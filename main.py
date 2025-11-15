@@ -1,12 +1,23 @@
 import asyncio
+from src.api import create_app
 from src.bot.bot import main as run_bot
+from src.core.database.models import Base
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
+import uvicorn
 
 async def main():
     engine = create_async_engine('sqlite+aiosqlite:///db.db')
     Session = async_sessionmaker(engine)
-    await run_bot(Session)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    app = create_app(Session)
+    config = uvicorn.Config(app)
+    server = uvicorn.Server(config)
+    await asyncio.gather(
+        run_bot(Session),
+        server.serve()
+    )
     
 
 if __name__ == "__main__":

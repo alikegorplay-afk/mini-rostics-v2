@@ -49,7 +49,8 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
                     f"Продукт под ID: '<b>{product.id}</b>'\n"
                     f"Название продукции: '<b>{product.title}</b>'\n"
                     f"Цена за еденицу продукции: '<b>{product.price}</b>'\n"
-                    f"Количество продукции на складе: '<b>{product.count}</b>'\n\n"
+                    f"Количество продукции на складе: '<b>{product.count}</b>'\n"
+                    f"Описание: '<b>{product.description}</b>'\n\n"
                     f"DEBUG\n"
                     f"Путь к постеру: {product.poster}"
                 )

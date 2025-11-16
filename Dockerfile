@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN mkdir -p /app/data
 RUN mkdir -p /app/data/database
+RUN mkdir -p /app/data/img
 
 COPY requirements.txt .
 

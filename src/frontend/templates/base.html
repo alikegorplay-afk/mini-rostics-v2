@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Rostics</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Декоративные элементы -->
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+    
+    <header>
+        <nav>
+            <a href="/">Домой</a>
+            <a href="/catalog">Каталог</a>
+            <a href="/about">О нас</a>
+            <a href="/contact">Контакты</a>
+        </nav>
+    </header>
+    
+    {% block content %}{% endblock %}
+
+    <footer>
+        <div class="container">
+            <p>© 2025 ООО "Mini-Rostics". Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -4,10 +4,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from ...managers import ProductManager
-from ..schemas import ProductCreateSchema, ProductUpdateSchema
+from ...schemas.product import ProductCreateSchema, ProductUpdateSchema
 
 def prod_router_init(session_maker: async_sessionmaker):
+    from ...managers import ProductManager
+    
     api = ProductManager(session_maker)
     router = APIRouter(prefix="/api/v1", tags=['Product'])
 

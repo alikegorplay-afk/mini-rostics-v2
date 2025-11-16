@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from ...core.database.models import OrderStatus
 from ...managers import OrderManager
-from ..schemas import OrderItemSchema, CreateOrderSchema
+from ...schemas.order import OrderItemSchema, CreateOrderSchema
 
 def order_router_init(session_maker: async_sessionmaker):
     api = OrderManager(session_maker)

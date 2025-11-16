@@ -121,29 +121,4 @@ class ProductUpdateSchema(BaseModel):
         if all(value is None for value in self.model_dump().values()):
             raise ValueError("Хотя бы одно поле должно быть указано для обновления")
         return self
-    
-
-class OrderItemSchema(BaseModel):
-    """Схема для обозночение продукта"""
-    product_id: int
-    count: int
-
-
-class CreateOrderSchema(BaseModel):
-    """Схема для создание заказа"""
-    items: List[OrderItemSchema]
-    
-    
-class OrderItemResponseSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    
-    id: int
-    product_id: int
-    count: int
-
-class OrderSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    
-    id: int
-    status: str
-    items: List[OrderItemResponseSchema]
+  

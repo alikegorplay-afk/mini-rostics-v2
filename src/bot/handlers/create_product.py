@@ -10,7 +10,7 @@ from aiogram.fsm.context import FSMContext
 
 from ..state import AddProduct
 from ...core.const import PATH_TO_SAVE_IMAGE
-from ...api.schemas import ProductCreateSchema
+from ...schemas import ProductCreateSchema
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import ProductManager
@@ -42,6 +42,9 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
     async def get_price(message: Message, state: FSMContext):
         try:
             price = float(message.text)
+            if price > 1_000_000 or price < 1:
+                await message.answer("Слишком высокая/малая цена! Пишите цены в диапазоне от 1 до 1 000 000")
+                return
             await state.update_data(price = price)
             await message.answer("Введите количество товара:")
             await state.set_state(AddProduct.waiting_for_count)
@@ -54,6 +57,9 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
             count = float(message.text)
             if not count.is_integer():
                 await message.answer("Пожалуйста введите целое число")
+                return
+            if count > 100_000 or count < 1:
+                await message.answer("Слишком много/мало товаров! Пишите в диапазоне от 1 до 100 000")
                 return
             await message.answer("Пришлите постер:")
             await state.update_data(count = count)
@@ -72,7 +78,12 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
         download_path = PATH_TO_SAVE_IMAGE / (photo_id + Path(file.file_path).suffix if file.file_path else ".jpg")
         
         await message.bot.download_file(file.file_path, download_path)
-        product = await add_data(data, download_path)
+        try:
+            product = await add_data(data, download_path)
+        except Exception as e:
+            await message.answer(f"Ошибка при добавлении продукта: {str(e)}")
+            return
+        
         await message.answer_photo(
             FSInputFile(product.poster),
             caption = (
@@ -90,7 +101,7 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
         return await manager.create_product(
             ProductCreateSchema(
                 **data,
-                poster = str(download_path)
+                poster = str(download_path).replace("\\", "/")
             )
         )
     

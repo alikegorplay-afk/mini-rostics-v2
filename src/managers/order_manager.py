@@ -12,7 +12,7 @@ from loguru import logger
 from ..core import Order, OrderItem
 from ..core.database.models import OrderStatus
 from ..core.exceptions import OrderNotFoundError
-from ..api.schemas import CreateOrderSchema, OrderItemSchema, OrderSchema, OrderItemResponseSchema
+from ..schemas.order import CreateOrderSchema, OrderItemSchema, OrderSchema, OrderItemResponseSchema
 
 class OrderManager:
     def __init__(self, session_maker: async_sessionmaker[AsyncSession]):

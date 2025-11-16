@@ -10,7 +10,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .update import update_init
-from ...api.schemas import ProductSchema
+from ...schemas import ProductSchema
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import ProductManager

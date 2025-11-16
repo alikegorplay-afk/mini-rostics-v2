@@ -1,16 +1,15 @@
 __all__ = [
     "ProductManager"
 ]
-from typing import Optional, List, Tuple, Dict, Any
+from typing import Optional, List, Tuple
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from loguru import logger
 
 from ..core import Product
 from ..core.exceptions import ProductNotFoundError
-from ..api.schemas import ProductCreateSchema, ProductUpdateSchema, ProductSchema
+from ..schemas.product import ProductCreateSchema, ProductUpdateSchema, ProductSchema
 
 class ProductManager:
     def __init__(self, session_maker: async_sessionmaker[AsyncSession]):

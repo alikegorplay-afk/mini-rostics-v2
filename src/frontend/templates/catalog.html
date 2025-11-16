@@ -2,33 +2,163 @@
 
 {% block content %}
 <link rel="stylesheet" href="/static/catalog-styles.css">
+<link rel="stylesheet" href="/static/modal-style.css">
+<link rel="stylesheet" href="/static/case.css">
+<link rel="stylesheet" href="/static/qr-code.css">
+<script type="text/javascript" src="/static/model.js"></script>
 
-<div class="container">
-    <section class="hero fade-in-up">
-        <h1>Каталог товаров</h1>
-        <p>Найдено товаров: {{ products|length }}</p>
-    </section>
-
-    <div class="catalog-grid" id="catalog">
+<div class="catalog-h1">
+    <h1>Наш каталог</h1>
+</div>
+<div class="catalog-container">
+    
+    <div class="catalog-grid">
         {% for product in products %}
-        <div class="product-card" id="product-{{ product.id }}">
+        <div class="product-card" 
+             data-product-id="{{ product.id }}" 
+             data-product-name="{{ product.title }}" 
+             data-product-price="{{ product.price }}" 
+             data-product-image="{{ product.poster }}" 
+             data-product-description="{{ product.description }}"
+             data-product-count="{{ product.count }}">
             <div class="product-image">
-                <img src="{{ product.poster }}" alt="{{ product.title }}" 
-                     onerror="this.src='/static/images/placeholder.jpg'">
+                <img src="{{ product.poster }}" alt="{{ product.title }}">
+                {% if product.count == 0 %}
+                <div class="out-of-stock-badge">Нет в наличии</div>
+                {% endif %}
             </div>
             <div class="product-info">
                 <h3 class="product-title">{{ product.title }}</h3>
-                <div class="product-price">{{ product.price }} ₽</div>
-                {% if product.description %}
-                <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
-                {% endif %}
+                <div class="product-price">
+                    <span class="current-price">{{ product.price }} руб.</span>
+                </div>
+                <div class="product-meta">
+                    {% if product.count > 0 %}
+                        <div class="in-stock">В наличии</div>
+                    {% else %}
+                        <div class="out-of-stock">Отсутствует</div>
+                    {% endif %}
+                </div>
+                <p class="product-description">{{ product.description }}</p>
             </div>
-        </div>
-        {% else %}
-        <div class="no-products">
-            <p>Товары не найдены</p>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<!-- Модальное окно -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        
+        <div class="modal-product">
+            <div class="modal-image">
+                <img id="modalProductImage" src="" alt="">
+                <div class="out-of-stock-badge" id="modalOutOfStock" style="display: none;">Нет в наличии</div>
+            </div>
+            
+            <div class="modal-info">
+                <div class="modal-header">
+                    <h2 id="modalProductName"></h2>
+                    <div class="modal-price-section">
+                        <span id="modalProductPrice" class="modal-price"></span>
+                        <span class="modal-currency">руб.</span>
+                    </div>
+                </div>
+                
+                <p class="modal-description" id="modalProductDescription"></p>
+                
+                <div class="stock-info">
+                    <span id="modalStockStatus"></span>
+                </div>
+                
+                <div class="quantity-selector">
+                    <span>Количество:</span>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn minus" type="button">-</button>
+                        <span class="quantity">1</span>
+                        <button class="quantity-btn plus" type="button">+</button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="add-to-cart-modal" id="modalAddToCart" type="button">
+                        Добавить в корзину - <span id="modalTotalPrice"></span> руб.
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Виджет корзины -->
+<div class="cart-widget" id="cartWidget">
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+</div>
+
+<!-- Модальное окно корзины -->
+<div id="cartModal" class="cart-modal">
+    <div class="cart-modal-content">
+        <div class="cart-modal-header">
+            <h2>Ваш заказ</h2>
+            <span class="cart-close">&times;</span>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Товары будут добавляться динамически -->
+            <div class="empty-cart" id="emptyCart">
+                <p>Корзина пуста</p>
+            </div>
+        </div>
+        
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Итого:</span>
+                <span id="cartTotalPrice">0 руб.</span>
+            </div>
+            
+            <div class="cart-actions">
+                <button class="order-btn" id="orderBtn">
+                    <span class="order-btn-text">Заказать</span>
+                    <span class="order-btn-icon">🚀</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно с QR кодом -->
+<div id="qrModal" class="qr-modal">
+    <div class="qr-modal-content">
+        <div class="qr-modal-header">
+            <h2>Заказ успешно оформлен! 🎉</h2>
+            <span class="qr-close">&times;</span>
+        </div>
+        
+        <div class="qr-modal-body">
+            <div class="qr-code-container">
+                <img id="qrCodeImage" src="" alt="QR Code" class="qr-code">
+                <div class="qr-loading" id="qrLoading">Генерация QR кода...</div>
+            </div>
+            
+            <div class="order-success-info">
+                <p>Ваш заказ принят в обработку</p>
+                <p class="order-number">Номер заказа: <span id="orderNumber">-</span></p>
+                <p class="order-total">Сумма: <span id="orderTotalAmount">0</span> руб.</p>
+            </div>
+            
+            <div class="qr-actions">
+                <button class="qr-close-btn" id="qrCloseBtn">Закрыть</button>
+                <button class="qr-print-btn" id="qrPrintBtn">🖨️ Печать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="/static/case.js"></script>
+
 {% endblock %}

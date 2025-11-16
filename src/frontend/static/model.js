@@ -86,15 +86,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Открытие модального окна при клике на карточку
     productCards.forEach(card => {
         card.addEventListener('click', function(e) {
-            // Проверяем, не был ли клик по кнопке или другому интерактивному элементу
-            if (!e.target.closest('button') && !e.target.classList.contains('add-to-cart')) {
+            // Более строгая проверка - открываем только при клике на определенные элементы
+            const ignoreElements = ['button', 'a', 'input', 'select', 'textarea'];
+            const isIgnoredElement = ignoreElements.some(tag => e.target.closest(tag));
+            const isInteractiveElement = e.target.closest('.add-to-cart') || 
+                                    e.target.closest('.quantity-btn') ||
+                                    e.target.closest('.quick-add') ||
+                                    e.target.closest('button');
+            
+            // Открываем модальное окно только если клик был на НЕ интерактивных элементах
+            if (!isIgnoredElement && !isInteractiveElement) {
                 openModal(this);
             }
         });
         
         // Добавляем обработчик для тач-событий (для мобильных)
         card.addEventListener('touchend', function(e) {
-            if (!e.target.closest('button') && !e.target.classList.contains('add-to-cart')) {
+            const ignoreElements = ['button', 'a', 'input', 'select', 'textarea'];
+            const isIgnoredElement = ignoreElements.some(tag => e.target.closest(tag));
+            const isInteractiveElement = e.target.closest('.add-to-cart') || 
+                                    e.target.closest('.quantity-btn') ||
+                                    e.target.closest('.quick-add') ||
+                                    e.target.closest('button');
+            
+            if (!isIgnoredElement && !isInteractiveElement) {
                 e.preventDefault();
                 openModal(this);
             }

@@ -20,7 +20,6 @@ async def main():
     Session = async_sessionmaker(engine)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        
     app = create_app(Session)
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     

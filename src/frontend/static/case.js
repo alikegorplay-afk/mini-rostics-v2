@@ -84,7 +84,7 @@ async function loadCartItems(cartData) {
             const itemTotal = product.price * item.count;
             totalPrice += itemTotal;
             loadedItems++;
-            
+        
             itemsHTML += `
                 <div class="cart-item" data-product-id="${product.id}">
                     <img src="${product.poster}" alt="${product.title}" class="cart-item-image" 
@@ -92,11 +92,6 @@ async function loadCartItems(cartData) {
                     <div class="cart-item-info">
                         <div class="cart-item-name">${product.title}</div>
                         <div class="cart-item-price">${product.price} руб. × ${item.count} = ${itemTotal} руб.</div>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-change minus" data-product-id="${product.id}">-</button>
-                            <span>${item.count}</span>
-                            <button class="quantity-change plus" data-product-id="${product.id}">+</button>
-                        </div>
                     </div>
                     <button class="cart-item-remove" data-product-id="${product.id}">×</button>
                 </div>
@@ -112,11 +107,6 @@ async function loadCartItems(cartData) {
                     <div class="cart-item-info">
                         <div class="cart-item-name">Товар #${item.product_id} (ошибка загрузки)</div>
                         <div class="cart-item-price">0 руб. × ${item.count} = 0 руб.</div>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-change minus" data-product-id="${item.product_id}">-</button>
-                            <span>${item.count}</span>
-                            <button class="quantity-change plus" data-product-id="${item.product_id}">+</button>
-                        </div>
                     </div>
                     <button class="cart-item-remove" data-product-id="${item.product_id}">×</button>
                 </div>
@@ -220,6 +210,7 @@ async function getProductInfo(productId) {
 function changeCartQuantity(productId, change) {
     const cartData = getCartData();
     const item = cartData.items.find(item => item.product_id === productId);
+    console.log(item);
     
     if (item) {
         item.count += change;
@@ -260,49 +251,228 @@ async function placeOrder() {
         // Показываем индикатор загрузки
         const orderBtn = document.getElementById('orderBtn');
         const originalText = orderBtn.innerHTML;
-        orderBtn.innerHTML = 'Оформление...';
+        orderBtn.innerHTML = '<span class="order-btn-text">Оформление...</span><span class="order-btn-icon"></span>';
         orderBtn.disabled = true;
         
-        // Отправляем запрос на сервер
+        console.log('Отправка заказа:', cartData);
+        
         const response = await fetch('/api/v1/order', {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(cartData)
         });
         
-        // Восстанавливаем кнопку
-        orderBtn.innerHTML = originalText;
-        orderBtn.disabled = false;
+        console.log('Ответ сервера:', response);
         
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Заказ оформлен:', result);
-            
-            showNotification('Заказ успешно оформлен!', 'success');
-            
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Результат заказа:', result);
+        
+        if (result.ok) {
+            // Очищаем корзину
             cartData.items.forEach(item => {
                 document.cookie = `${item.product_id}=; path=/; max-age=0`;
             });
             
             updateCartWidget();
             closeCartModal();
+            
+            orderBtn.innerHTML = `<div class="cart-actions">
+                <button class="order-btn" id="orderBtn">
+                    <span class="order-btn-text">Заказать</span>
+                    <span class="order-btn-icon">🚀</span>
+                </button>
+            </div>`
+            await showQRCode(result);
+            
         } else {
-            const error = await response.json();
-            console.error('Ошибка сервера:', error);
-            showNotification(`Ошибка при оформлении заказа: ${error.message || response.statusText}`, 'error');
+            throw new Error(result.message || 'Ошибка при оформлении заказа');
         }
         
     } catch (error) {
-        console.error('Ошибка сети:', error);
+        console.error('Ошибка оформления заказа:', error);
         
-        // Восстанавливаем кнопку в случае ошибки
+        let errorMessage = 'Ошибка при оформлении заказа';
+        if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+            errorMessage = 'Ошибка сети. Проверьте подключение к интернету';
+        } else if (error.message.includes('500')) {
+            errorMessage = 'Ошибка сервера. Попробуйте позже';
+        } else {
+            errorMessage = error.message;
+        }
+        
+        showNotification(errorMessage, 'error');
+    } finally {
+        // Всегда восстанавливаем кнопку
         const orderBtn = document.getElementById('orderBtn');
-        orderBtn.innerHTML = 'Заказать';
-        orderBtn.disabled = false;
+        if (orderBtn) {
+            orderBtn.innerHTML = originalText;
+            orderBtn.disabled = false;
+        }
+    }
+}
+
+// Функция для показа QR кода
+async function showQRCode(orderResult) {
+    const qrModal = document.getElementById('qrModal');
+    const qrCodeImage = document.getElementById('qrCodeImage');
+    const qrLoading = document.getElementById('qrLoading');
+    const orderNumber = document.getElementById('orderNumber');
+    const orderTotalAmount = document.getElementById('orderTotalAmount');
+    
+    if (!qrModal || !qrCodeImage) {
+        console.error('QR modal elements not found');
+        return;
+    }
+    
+    try {
+        // Устанавливаем номер заказа и сумму
+        orderNumber.textContent = orderResult.result.id
+        orderTotalAmount.textContent = await calculateOrderTotal(orderResult);
         
-        showNotification('Ошибка сети при оформлении заказа', 'error');
+        // Показываем модальное окно
+        qrModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Показываем индикатор загрузки
+        qrLoading.style.display = 'block';
+        qrCodeImage.style.display = 'none';
+        
+        // Генерируем данные для QR кода
+        const qrData = generateQRData(orderResult);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=450x450&data=${encodeURIComponent(qrData)}`;
+        
+        // Загружаем QR код
+        qrCodeImage.onload = function() {
+            qrLoading.style.display = 'none';
+            qrCodeImage.style.display = 'block';
+        };
+        
+        qrCodeImage.onerror = function() {
+            qrLoading.style.display = 'none';
+            qrCodeImage.style.display = 'block';
+            qrCodeImage.alt = 'Ошибка загрузки QR кода';
+            console.error('Failed to load QR code');
+        };
+        
+        qrCodeImage.src = qrUrl;
+        
+    } catch (error) {
+        console.error('Error showing QR code:', error);
+        qrLoading.textContent = 'Ошибка генерации QR кода';
+    }
+}
+
+// Функция для генерации данных QR кода
+function generateQRData(orderResult) {
+    return orderResult.result.id
+}
+
+// Функция для расчета общей суммы заказа
+async function calculateOrderTotal(orderResult) {
+    try {
+        let products = {};
+        const productIds = [];
+        
+        for (let x of orderResult.result.items) {
+            products[x.product_id] = x.count;
+            productIds.push(x.product_id);
+        }
+        console.log('Products data:', products);
+        console.log(JSON.stringify(productIds));
+
+        // Если API ожидает POST с body
+        const response = await fetch('/api/v1/products', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(productIds // Отправляем массив ID
+            )
+        });
+        
+        console.log('Ответ сервера:', response);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Products data from API:', data);
+        
+        let total = 0;
+        
+        if (data.ok && data.result) {
+            for (let product of data.result) {
+                if (products[product.id]) {
+                    total += product.price * products[product.id];
+                }
+            }
+        }
+        
+        console.log('Calculated total:', total);
+        return total;
+        
+    } catch (error) {
+        console.error('Error calculating order total:', error);
+        return 0;
+    }
+}
+
+// Функции для управления QR модальным окном
+function closeQRModal() {
+    const qrModal = document.getElementById('qrModal');
+    if (qrModal) {
+        qrModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function printQRCode() {
+    const qrCodeImage = document.getElementById('qrCodeImage');
+    if (qrCodeImage) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>QR Code - Заказ</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            text-align: center; 
+                            padding: 2rem;
+                        }
+                        .qr-code { 
+                            max-width: 400px; 
+                            height: auto; 
+                            margin: 1rem 0;
+                        }
+                        .order-info {
+                            margin: 1rem 0;
+                            font-size: 1.2rem;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>Ваш заказ</h2>
+                    <div class="order-info">
+                        <p>Номер: ${document.getElementById('orderNumber').textContent}</p>
+                        <p>Сумма: ${document.getElementById('orderTotalAmount').textContent} руб.</p>
+                    </div>
+                    <img src="${qrCodeImage.src}" alt="QR Code" class="qr-code">
+                    <p>Сохраните этот QR код для отслеживания заказа</p>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
     }
 }
 
@@ -373,6 +543,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    document.querySelector('.qr-close')?.addEventListener('click', closeQRModal);
+    document.getElementById('qrCloseBtn')?.addEventListener('click', closeQRModal);
+    document.getElementById('qrPrintBtn')?.addEventListener('click', printQRCode);
+    
+    // Закрытие QR модального окна при клике вне его
+    document.getElementById('qrModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeQRModal();
+        }
+    });
     
     // Закрытие по ESC
     document.addEventListener('keydown', function(e) {

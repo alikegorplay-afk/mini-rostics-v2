@@ -85,5 +85,27 @@ f"""ID заказа <b>{order.id}</b>
                     "<code>/getord [ID заказа]</code>"
                 )
             )
+    
+    
+    @router.message(Command("updord"))
+    async def update_status(message: Message):
+        try:
+            _, id = message.text.split()
+            id = int(id)
+
+            order = await api.get_order(id)
+            if not order:
+                await message.answer(f"Не найден заказ по ID {id}")
+                return
             
+            await api.update_status(id)
+            await message.answer(f"Заказ оплачен!")
+        except ValueError:
+            await message.answer(
+                (
+                    "Пожалуйста введите в формате:\n"
+                    "<code>/updord [ID заказа]</code>"
+                )
+            )
+    
     return router

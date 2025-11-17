@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.error-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.error-content {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e5e9;
+}
+
+.error-icon {
+    margin-bottom: 1.5rem;
+    color: #ff4757;
+}
+
+.error-icon svg {
+    opacity: 0.8;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: #636e72;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.error-suggestions {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: left;
+    border-left: 4px solid #ffa502;
+}
+
+.error-suggestions h3 {
+    color: #2d3436;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.error-suggestions ul {
+    color: #636e72;
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.error-suggestions li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.btn-primary {
+    background: #0984e3;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0770c4;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
+}
+
+.btn-secondary {
+    background: #636e72;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #2d3436;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #0984e3;
+    border-color: #0984e3;
+}
+
+.btn-outline:hover {
+    background: #0984e3;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.error-search {
+    border-top: 1px solid #e1e5e9;
+    padding-top: 2rem;
+}
+
+.error-search p {
+    color: #636e72;
+    margin-bottom: 1rem;
+}
+
+.search-form {
+    display: flex;
+    max-width: 400px;
+    margin: 0 auto;
+    gap: 0.5rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #dfe6e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0984e3;
+}
+
+.search-btn {
+    padding: 0.75rem 1.5rem;
+    background: #00b894;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-btn:hover {
+    background: #00a085;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .error-content {
+        padding: 2rem 1rem;
+        margin: 1rem;
+    }
+    
+    .error-title {
+        font-size: 2rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 200px;
+    }
+    
+    .search-form {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .error-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    .error-title {
+        font-size: 1.75rem;
+    }
+    
+    .error-suggestions {
+        padding: 1rem;
+    }
+}
+</style>
+
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        
+        <h1 class="error-title">404 - Страница не найдена</h1>
+        
+        <p class="error-message">
+            К сожалению, запрашиваемая страница не существует. 
+            Возможно, вы ошиблись при вводе адреса или страница была перемещена.
+        </p>
+
+        <div class="error-suggestions">
+            <h3>Что можно сделать:</h3>
+            <ul>
+                <li>Проверьте правильность написания адреса</li>
+                <li>Вернитесь на предыдущую страницу</li>
+                <li>Перейдите в каталог товаров</li>
+                <li>Воспользуйтесь поиском по сайту</li>
+            </ul>
+        </div>
+
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                ← Назад
+            </a>
+            <a href="/catalog" class="btn btn-primary">
+                Перейти в каталог
+            </a>
+            <a href="/" class="btn btn-outline">
+                На главную
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

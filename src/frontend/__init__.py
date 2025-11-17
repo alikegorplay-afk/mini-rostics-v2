@@ -6,22 +6,22 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
-
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from ..core.const import PATH_TO_SAVE_IMAGE
 
 
 def get_router(session: async_sessionmaker[AsyncSession]):
     from ..managers import ProductManager
+    from ..managers import OrderManager
+    
     api = ProductManager(session)
+    ord_api = OrderManager(session)
     router = APIRouter()
 
     # Получаем абсолютный путь к директории frontend
     FRONTEND_DIR = os.path.dirname(os.path.abspath(__file__))
     TEMPLATES_DIR = os.path.join(FRONTEND_DIR, "templates")
-    STATIC_DIR = os.path.join(FRONTEND_DIR, "static")
-
     
-    # Настройка шаблонов
     templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
     @router.get("/", response_class=HTMLResponse)
@@ -37,13 +37,50 @@ def get_router(session: async_sessionmaker[AsyncSession]):
                                         }
                                         )
 
-    @router.get("/about", response_class=HTMLResponse)
-    async def about(request: Request):
-        return templates.TemplateResponse("about.html", {"request": request})
-
-    @router.get("/contact", response_class=HTMLResponse)
-    async def contact(request: Request):
-        return templates.TemplateResponse("contact.html", {"request": request})
+    @router.get("/order/{id}", response_class=HTMLResponse)
+    async def about(id: int, request: Request):
+        data = await ord_api.get_order(id)
+        
+        if not data:
+            return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+        else:
+            # Получаем продукты для всех items в заказе
+            product_ids = [x.product_id for x in data.items]
+            products_list = await api.get_products(product_ids)
+            products = {x.id: x for x in products_list}
+            result = 0
+            
+            items = []
+            for order_item in data.items:
+                product = products.get(order_item.product_id)
+                if product:
+                    result += order_item.count * product.price
+                    items.append(
+                        {
+                            'title': product.title,
+                            'poster': product.poster if product.poster.startswith('http') else "/" + product.poster,
+                            'price': product.price,
+                            'count': order_item.count
+                        }
+                    )
+                    
+            # Используем более уникальное имя переменной
+            order_info = {
+                'status': data.status,
+                'id': data.id,
+                'sum': result,
+                'data': items
+            }
+            
+            from pprint import pp
+            pp(order_info)
+            
+            return templates.TemplateResponse("order.html", 
+                                            {
+                                                "request": request, 
+                                                'order_info': order_info,  # Изменили на order_info
+                                            }
+                                        )
     
     @router.get("/data/img/{poster}", response_class=FileResponse)
     async def get_poster(poster: str):

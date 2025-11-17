@@ -15,12 +15,12 @@
     <div class="catalog-grid">
         {% for product in products %}
         <div class="product-card" 
-             data-product-id="{{ product.id }}" 
-             data-product-name="{{ product.title }}" 
-             data-product-price="{{ product.price }}" 
-             data-product-image="{{ product.poster }}" 
-             data-product-description="{{ product.description }}"
-             data-product-count="{{ product.count }}">
+            data-product-id="{{ product.id }}" 
+            data-product-name="{{ product.title }}" 
+            data-product-price="{{ product.price }}" 
+            data-product-image="{{ product.poster }}" 
+            data-product-description="{{ product.description }}"
+            data-product-count="{{ product.count }}">
             <div class="product-image">
                 <img src="{{ product.poster }}" alt="{{ product.title }}">
                 {% if product.count == 0 %}
@@ -39,7 +39,17 @@
                         <div class="out-of-stock">Отсутствует</div>
                     {% endif %}
                 </div>
-                <p class="product-description">{{ product.description }}</p>
+                {% if product.description[:100] == product.description %}
+                    <p class="product-description">{{ product.description }}</p>
+                {% else %}
+                    <p class="product-description">{{ product.description[:100] }}...</p>
+                {% endif %}
+                
+                <!-- Добавленная кнопка для открытия модального окна -->
+                <button class="quick-view-btn" type="button">
+                    <span class="quick-view-icon"></span>
+                    Быстрый просмотр
+                </button>
             </div>
         </div>
         {% endfor %}
@@ -152,7 +162,6 @@
             
             <div class="qr-actions">
                 <button class="qr-close-btn" id="qrCloseBtn">Закрыть</button>
-                <button class="qr-print-btn" id="qrPrintBtn">🖨️ Печать</button>
             </div>
         </div>
     </div>

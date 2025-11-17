@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/order.css">
+
+<div class="order-container">
+    <div class="order-header">
+        <h1 class="order-id">Заказ #{{ order_info.id }}</h1>
+        <div class="order-status status-{{ 'unpaid' if order_info.status == 'Неоплаченный' else 'paid' if order_info.status == 'Оплаченный' else order_info.status|lower|replace(' ', '-') }}">
+            {{ order_info.status }}
+        </div>
+        <div class="order-sum">Общая сумма: {{ "%.2f"|format(order_info.sum) }} ₽</div>
+    </div>
+    
+    <div class="items-list">
+        {% if order_info.data %}
+            {% for item in order_info.data %}
+            <div class="item-card">
+                {% if item.poster %}
+                <img src="{{ item.poster }}" alt="{{ item.title }}" class="item-image">
+                {% else %}
+                <div class="item-image" style="background: #ddd; display: flex; align-items: center; justify-content: center; color: #999;">
+                    Нет фото
+                </div>
+                {% endif %}
+                
+                <div class="item-details">
+                    <h3 class="item-name">{{ item.title }}</h3>
+                    <div class="item-meta">
+                        <span class="item-count">Количество: {{ item.count }} шт.</span>
+                        <span class="item-price">Цена: {{ "%.2f"|format(item.price) }} ₽</span>
+                    </div>
+                </div>
+                
+                <div class="item-total">
+                    {{ "%.2f"|format(item.price * item.count) }} ₽
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-order">В заказе пока нет товаров</div>
+        {% endif %}
+    </div>
+    
+    {% if order_info.items %}
+    <div class="order-footer">
+        <div class="final-sum">Итого: {{ "%.2f"|format(order_info.sum) }} ₽</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

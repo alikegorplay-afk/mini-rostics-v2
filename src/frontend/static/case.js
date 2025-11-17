@@ -81,7 +81,9 @@ async function loadCartItems(cartData) {
     for (const item of cartData.items) {
         try {
             const product = await getProductInfo(item.product_id);
-            const itemTotal = product.price * item.count;
+            const itemTotal = Math.round(product.price * item.count * 100) / 100;
+            console.log(itemTotal);
+            
             totalPrice += itemTotal;
             loadedItems++;
         
@@ -117,7 +119,7 @@ async function loadCartItems(cartData) {
     // Обновляем DOM после загрузки всех товаров
     if (loadedItems === cartData.items.length) {
         cartItems.innerHTML = itemsHTML;
-        cartTotalPrice.textContent = `${totalPrice} руб.`;
+        cartTotalPrice.textContent = `${Math.round(totalPrice * 100) / 100} руб.`;
         
         // Добавляем обработчики событий для новых элементов
         addCartEventListeners();
@@ -282,15 +284,14 @@ async function placeOrder() {
             
             updateCartWidget();
             closeCartModal();
-            
+        
+            await showQRCode(result);
             orderBtn.innerHTML = `<div class="cart-actions">
                 <button class="order-btn" id="orderBtn">
                     <span class="order-btn-text">Заказать</span>
                     <span class="order-btn-icon">🚀</span>
                 </button>
             </div>`
-            await showQRCode(result);
-            
         } else {
             throw new Error(result.message || 'Ошибка при оформлении заказа');
         }
@@ -371,7 +372,8 @@ async function showQRCode(orderResult) {
 
 // Функция для генерации данных QR кода
 function generateQRData(orderResult) {
-    return orderResult.result.id
+    const baseURL = window.location.origin;
+    return `${baseURL}/order/${orderResult.result.id}`
 }
 
 // Функция для расчета общей суммы заказа
@@ -438,6 +440,13 @@ function closeQRModal() {
 function printQRCode() {
     const qrCodeImage = document.getElementById('qrCodeImage');
     if (qrCodeImage) {
+        console.log(1231231231);
+        
+        console.log(document.getElementById('orderTotalAmount'));
+        
+        const price = Math.round(parseFloat(document.getElementById('orderTotalAmount').textContent) * 100) / 100;
+        console.log(price);
+        
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
             <html>
@@ -464,7 +473,7 @@ function printQRCode() {
                     <h2>Ваш заказ</h2>
                     <div class="order-info">
                         <p>Номер: ${document.getElementById('orderNumber').textContent}</p>
-                        <p>Сумма: ${document.getElementById('orderTotalAmount').textContent} руб.</p>
+                        <p>Сумма: ${price} руб.</p>
                     </div>
                     <img src="${qrCodeImage.src}" alt="QR Code" class="qr-code">
                     <p>Сохраните этот QR код для отслеживания заказа</p>
@@ -545,7 +554,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.querySelector('.qr-close')?.addEventListener('click', closeQRModal);
     document.getElementById('qrCloseBtn')?.addEventListener('click', closeQRModal);
-    document.getElementById('qrPrintBtn')?.addEventListener('click', printQRCode);
     
     // Закрытие QR модального окна при клике вне его
     document.getElementById('qrModal')?.addEventListener('click', function(e) {

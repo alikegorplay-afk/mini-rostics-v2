@@ -72,9 +72,6 @@ def get_router(session: async_sessionmaker[AsyncSession]):
                 'data': items
             }
             
-            from pprint import pp
-            pp(order_info)
-            
             return templates.TemplateResponse("order.html", 
                                             {
                                                 "request": request, 

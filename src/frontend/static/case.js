@@ -286,12 +286,10 @@ async function placeOrder() {
             closeCartModal();
         
             await showQRCode(result);
-            orderBtn.innerHTML = `<div class="cart-actions">
-                <button class="order-btn" id="orderBtn">
+            orderBtn.innerHTML = `
                     <span class="order-btn-text">Заказать</span>
                     <span class="order-btn-icon">🚀</span>
-                </button>
-            </div>`
+                    `
         } else {
             throw new Error(result.message || 'Ошибка при оформлении заказа');
         }

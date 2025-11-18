@@ -16,6 +16,13 @@
             <a href="/">Домой</a>
             <a href="/catalog">Каталог</a>
         </nav>
+        <div class="mobile-menu">
+            <button class="hamburger">☰</button>
+            <div class="mobile-nav">
+                <a href="/">Домой</a>
+                <a href="/catalog">Каталог</a>
+            </div>
+        </div>
     </header>
     
     {% block content %}{% endblock %}
@@ -26,4 +33,12 @@
         </div>
     </footer>
 </body>
+
+<script>
+// JavaScript для гамбургер-меню
+    document.querySelector('.hamburger').addEventListener('click', function() {
+        document.querySelector('.mobile-nav').classList.toggle('active');
+    });
+</script>
+
 </html>

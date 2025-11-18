@@ -172,12 +172,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
         const backgroundColor = type === 'success' ? '#10b981' : 
-                              type === 'warning' ? '#f59e0b' : '#ef4444';
+                            type === 'warning' ? '#f59e0b' : '#ef4444';
         
         notification.style.cssText = `
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px; /* Изменили right на left */
             background: ${backgroundColor};
             color: white;
             padding: 1rem 1.5rem;
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             z-index: 1001;
             font-weight: 600;
-            transform: translateX(100%);
+            transform: translateX(-100%); /* Изменили на отрицательное значение */
             transition: transform 0.3s ease;
             max-width: 300px;
             word-wrap: break-word;
@@ -194,11 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(notification);
         
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
+            notification.style.transform = 'translateX(0)'; /* Остается 0 */
         }, 100);
         
         setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
+            notification.style.transform = 'translateX(-100%)'; /* Изменили на отрицательное значение */
             setTimeout(() => {
                 if (notification.parentNode) {
                     document.body.removeChild(notification);

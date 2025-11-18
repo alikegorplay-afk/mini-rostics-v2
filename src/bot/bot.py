@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
@@ -11,9 +10,10 @@ from loguru import logger
 
 async def set_command(bot: Bot):
     command = [
+        BotCommand(command="addprod", description="Добавить продукты"),
         BotCommand(command="start", description="Начать всё сначала"),
         BotCommand(command="cancel", description="Сброс всех состояний"),
-        BotCommand(command="addprod", description="Добавить продукты"),
+        BotCommand(command="help", description="Получить справку")
     ]
     await bot.set_my_commands(command)
 

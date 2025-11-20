@@ -6,7 +6,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from ..core.const import PATH_TO_SAVE_IMAGE
 
 
@@ -18,7 +17,6 @@ def get_router(session: async_sessionmaker[AsyncSession]):
     ord_api = OrderManager(session)
     router = APIRouter()
 
-    # Получаем абсолютный путь к директории frontend
     FRONTEND_DIR = os.path.dirname(os.path.abspath(__file__))
     TEMPLATES_DIR = os.path.join(FRONTEND_DIR, "templates")
     
@@ -40,7 +38,7 @@ def get_router(session: async_sessionmaker[AsyncSession]):
     @router.get("/order/{id}", response_class=HTMLResponse)
     async def about(id: int, request: Request):
         data = await ord_api.get_order(id)
-        
+
         if not data:
             return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
         else:
@@ -64,7 +62,6 @@ def get_router(session: async_sessionmaker[AsyncSession]):
                         }
                     )
                     
-            # Используем более уникальное имя переменной
             order_info = {
                 'status': data.status,
                 'id': data.id,
@@ -78,6 +75,10 @@ def get_router(session: async_sessionmaker[AsyncSession]):
                                                 'order_info': order_info,  # Изменили на order_info
                                             }
                                         )
+    
+    @router.get("/login", response_class=HTMLResponse)
+    async def login(request: Request):
+        return templates.TemplateResponse("login.html", {"request": request})
     
     @router.get("/data/img/{poster}", response_class=FileResponse)
     async def get_poster(poster: str):

@@ -10,10 +10,11 @@ from src.core.const import DATABASE_URL
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from fastapi.staticfiles import StaticFiles
 
+import uvicorn
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "src", "frontend", "static")
 
-import uvicorn
 
 async def main():
     engine = create_async_engine(DATABASE_URL)
@@ -24,7 +25,7 @@ async def main():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
         
     app.include_router(get_router(Session))
-    config = uvicorn.Config(app, "0.0.0.0", port=8000)
+    config = uvicorn.Config(app) # , "0.0.0.0", port=8000
     server = uvicorn.Server(config)
     await asyncio.gather(
         run_bot(Session),

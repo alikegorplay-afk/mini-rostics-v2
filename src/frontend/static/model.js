@@ -150,8 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Этот товар закончился!', 'error');
             return;
         }
-        
-        const totalPrice = basePrice * quantity;
         const productName = modalProductName.textContent;
 
         // Добавляем в корзину через cookies

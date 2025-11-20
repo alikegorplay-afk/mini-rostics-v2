@@ -157,7 +157,7 @@ def update_init(api: ProductManager):
             )
             
     @router.message(Update.waiting_for_new_poster, F.photo)
-    async def update_count(message: Message, state: FSMContext):
+    async def update_image(message: Message, state: FSMContext):
         try:
             data = await state.get_data()
             photo = message.photo[-1]

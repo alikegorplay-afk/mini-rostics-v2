@@ -8,6 +8,9 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from loguru import logger
 
+from ..core.config import config
+from .handlers import init
+
 async def set_command(bot: Bot):
     command = [
         BotCommand(command="addprod", description="Добавить продукты"),
@@ -16,9 +19,6 @@ async def set_command(bot: Bot):
         BotCommand(command="help", description="Получить справку")
     ]
     await bot.set_my_commands(command)
-
-from ..core.config import config
-from .handlers import init
 
 async def main(session_maker: async_sessionmaker[AsyncSession]):
     logger.info("Запуск бота...")

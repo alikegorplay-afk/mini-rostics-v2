@@ -417,6 +417,8 @@ async function calculateOrderTotal(orderResult) {
             }
         }
         
+        total = Math.round(total * 100) / 100;
+
         console.log('Calculated total:', total);
         return total;
         

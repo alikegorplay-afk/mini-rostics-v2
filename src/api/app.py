@@ -3,9 +3,7 @@ import os
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from .routers import create
 
 

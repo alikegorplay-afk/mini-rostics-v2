@@ -7,6 +7,45 @@
 <link rel="stylesheet" href="/static/qr-code.css">
 <script type="text/javascript" src="/static/model.js"></script>
 
+<style>
+.modal-hear {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-hear-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+}
+#countdown {
+    font-weight: bold;
+    color: red;
+}
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+</style>
+
+<div id="inactiveModal" class="modal-hear">
+    <div class="modal-hear-content">
+        <h2>Вы тут?</h2>
+        <p>Сессия будет сброшена через <span id="countdown">10</span> секунд</p>
+        <button id="stayActive">Да, я здесь!</button>
+    </div>
+</div>
+
 <div class="catalog-h1">
     <h1>Наш каталог</h1>
 </div>
@@ -169,5 +208,6 @@
 
 
 <script type="text/javascript" src="/static/case.js"></script>
+<script type="text/javascript" src="/static/youhear.js"></script>
 
 {% endblock %}

@@ -1,12 +1,9 @@
-from pathlib import Path
-from typing import Dict, Any
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message, FSInputFile
 from aiogram.filters import Command 
-from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .update import update_init

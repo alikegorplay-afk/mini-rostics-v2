@@ -9,4 +9,5 @@ def init(session_maker: async_sessionmaker[AsyncSession]):
     product_router = product_add_router(session_maker)
     product_api = product_api_router(session_maker)
     order = init_order_router(session_maker)
+    
     return [start_router, product_api, product_router, order]

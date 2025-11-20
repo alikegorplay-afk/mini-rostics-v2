@@ -1,16 +1,11 @@
-from pathlib import Path
-from typing import Dict, Any
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from aiogram import Router, F
-from aiogram.types import Message, FSInputFile, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command 
-from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from .update import update_init
-from ...schemas import ProductSchema
 from ...core.database.models import OrderStatus
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
@@ -99,7 +94,7 @@ f"""ID заказа <b>{order.id}</b>
                 return
             
             await api.update_status(id)
-            await message.answer(f"Заказ оплачен!")
+            await message.answer("Заказ оплачен!")
         except ValueError:
             await message.answer(
                 (

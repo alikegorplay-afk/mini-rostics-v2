@@ -2,7 +2,7 @@ __all__ = [
     "OrderManager"
 ]
 
-from typing import Literal, Optional, Tuple, List
+from typing import Literal, Optional, Tuple
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy import select
@@ -186,5 +186,5 @@ class OrderManager:
         except OrderNotFoundError:
             raise
             
-        except Exception as e:
+        except Exception:
             raise

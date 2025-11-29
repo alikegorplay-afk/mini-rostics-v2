@@ -11,18 +11,25 @@ from aiogram.fsm.context import FSMContext
 from ..state import AddProduct
 from ...core.const import PATH_TO_SAVE_IMAGE
 from ...schemas import ProductCreateSchema
+from ...tools import get_poster
+from ...managers.login_manager import UserManager
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import ProductManager
     return ProductManager(session_maker)
 
 
-def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
+def product_add_router(session_maker: async_sessionmaker[AsyncSession], user_manager: UserManager):
     router = Router()
     manager = create_manager(session_maker)
 
     @router.message(Command("addprod"))
     async def add_product(message: Message, state: FSMContext):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         await message.answer("Введите название товара:")
         await state.set_state(AddProduct.waiting_for_title)
         
@@ -85,7 +92,7 @@ def product_add_router(session_maker: async_sessionmaker[AsyncSession]):
             return
         
         await message.answer_photo(
-            FSInputFile(product.poster),
+            get_poster(product.poster),
             caption = (
                 f"Продукт под ID <b>{product.id}</b> успешно добавлен\n"
                 f"Название продукции <b>{product.title}</b>\n"

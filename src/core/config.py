@@ -15,6 +15,7 @@ class Config:
     def __post_init__(self):
         self.BOT_TOKEN = os.getenv("BOT_TOKEN")
         self.API_TOKEN = os.getenv("API_TOKEN")
+        self.DEBUG = bool(os.getenv("DEBUG")) if os.getenv("DEBUG") else False
         self._validate()
     
     def _validate(self):

@@ -1,13 +1,15 @@
-
+from urllib.parse import urlparse
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from aiogram import Router
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message
 from aiogram.filters import Command 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .update import update_init
 from ...schemas import ProductSchema
+from ...tools import  get_poster
+from ...managers.login_manager import UserManager
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import ProductManager
@@ -25,12 +27,17 @@ def select_keyborad(product: ProductSchema):
     )
 
 
-def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
+def product_api_router(session_maker: async_sessionmaker[AsyncSession], user_manager: UserManager):
     router = Router()
     manager = create_manager(session_maker)
     
     @router.message(Command("getprod"))
     async def get_product(message: Message):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         try:
             _, id = message.text.split()
             if not id.isdigit():
@@ -41,7 +48,7 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
                 await message.answer(f"Продукт с ID {id} не найден")
                 return
             await message.answer_photo(
-                FSInputFile(product.poster),
+                get_poster(product.poster),
                 caption = (
                     f"Продукт под ID: '<b>{product.id}</b>'\n"
                     f"Название продукции: '<b>{product.title}</b>'\n"
@@ -62,6 +69,11 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
     
     @router.message(Command("delprod"))
     async def delete_prod(message: Message):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         try:
             _, id = message.text.split()
             if not id.isdigit():
@@ -84,6 +96,11 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
     
     @router.message(Command("setprod"))
     async def set_prod(message: Message):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         try:
             _, id = message.text.split()
             if not id.isdigit():
@@ -93,8 +110,9 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
             if not product:
                 await message.answer(f"Продукт с ID {id} не найден")
                 return
+            
             await message.answer_photo(
-                FSInputFile(product.poster),
+                get_poster(product.poster),
                 caption = (
                     f"Продукт под ID: '<b>{product.id}</b>' успешно обновлён\n"
                     f"Название продукции: '<b>{product.title}</b>'\n"
@@ -112,6 +130,7 @@ def product_api_router(session_maker: async_sessionmaker[AsyncSession]):
                     "<code>/setprod [ID продукта]</code>"
                 )
             )
+        
             
     router.include_router(update_init(manager)) 
     return router

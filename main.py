@@ -6,9 +6,11 @@ from src.api import create_app
 from src.bot.bot import main as run_bot
 from src.core.database.models import Base
 from src.core.const import DATABASE_URL
+from src.core import config as core
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from fastapi.staticfiles import StaticFiles
+from loguru import logger
 
 import uvicorn
 
@@ -25,7 +27,10 @@ async def main():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
         
     app.include_router(get_router(Session))
-    config = uvicorn.Config(app, "0.0.0.0", port=8000)
+    if core.DEBUG:
+        config = uvicorn.Config(app)
+    else:
+        config = uvicorn.Config(app, "0.0.0.0", port=8000)
     server = uvicorn.Server(config)
     await asyncio.gather(
         run_bot(Session),
@@ -34,4 +39,9 @@ async def main():
     
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Программа остоновлена пользователем")
+    except Exception as e:
+        logger.critical(f"Неизваестная ошибка! Программа остонавливается: (error = {e})")

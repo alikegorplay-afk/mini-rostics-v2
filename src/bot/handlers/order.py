@@ -7,6 +7,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from ...core.database.models import OrderStatus
+from ...managers.login_manager import UserManager
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import OrderManager
@@ -16,7 +17,7 @@ def product_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import ProductManager
     return ProductManager(session_maker)
 
-def init_order_router(session_maker: async_sessionmaker[AsyncSession]):
+def init_order_router(session_maker: async_sessionmaker[AsyncSession], user_manager: UserManager):
     api = create_manager(session_maker)
     product_api = product_manager(session_maker)
     router = Router()
@@ -45,6 +46,11 @@ f"""ID заказа <b>{order.id}</b>
     
     @router.message(Command("getord"))
     async def get_order(message: Message):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         try:
             _, id = message.text.split()
             id = int(id)
@@ -63,7 +69,7 @@ f"""ID заказа <b>{order.id}</b>
 Итоговая цена заказа <b>{total_price} руб.</b>\n
 В заказ входят такие продукты как:\n
 {'\n'.join(
-    [f"{x.id}. {x.title} - {x.price} руб" for x in items]
+    [f"{x.count} X {x.title} - {x.price * ids[x.id]} руб" for x in items]
 )}
 """
                 ), reply_markup=InlineKeyboardMarkup(
@@ -71,7 +77,7 @@ f"""ID заказа <b>{order.id}</b>
                         [InlineKeyboardButton(text="Обновить статус", 
                                               callback_data=f'updord-{order.id}')]
                     ]
-                )
+                ) if order.status != "Оплачен" else None
             )
         except ValueError:
             await message.answer(
@@ -81,9 +87,13 @@ f"""ID заказа <b>{order.id}</b>
                 )
             )
     
-    
     @router.message(Command("updord"))
     async def update_status(message: Message):
+        if not await user_manager.is_auth(message.chat.id):
+            await message.answer(
+                "У вас нет прав на это действие"
+            )
+            return
         try:
             _, id = message.text.split()
             id = int(id)

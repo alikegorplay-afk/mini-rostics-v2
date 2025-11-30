@@ -8,3 +8,6 @@ DATA_BASE_NAME = "db.db"
 
 # Полный путь к БД
 DATABASE_URL = f"sqlite+aiosqlite:///{PATH_TO_DATABASE / DATA_BASE_NAME}"
+
+# Путь к отчётам
+REPORT_PATH = DATA_DIR / "report.xlsx"

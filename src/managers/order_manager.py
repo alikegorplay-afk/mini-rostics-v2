@@ -2,7 +2,7 @@ __all__ = [
     "OrderManager"
 ]
 
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional, Tuple, List
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy import select
@@ -186,5 +186,26 @@ class OrderManager:
         except OrderNotFoundError:
             raise
             
-        except Exception:
+        except Exception as e:
+            logger.error(f"❌ Ошибка при обновлении статуса {e}")
+            raise
+        
+    async def get_all_orders(self) -> List[OrderSchema]:
+        try:
+            async with self.Session() as session:
+                stmt = select(Order).options(selectinload(Order.items))
+                result = await session.execute(stmt)
+                orders = result.scalars()
+                
+                return [OrderSchema(
+                    id = order.id,
+                    status= order.status,
+                    items = [OrderItemResponseSchema(
+                        id = x.id,
+                        product_id=x.product_id,
+                        count=x.count
+                    ) for x in order.items]
+                ) for order in orders]
+        except Exception as e:
+            logger.error(f"❌ Ошибка при получении всех заказов {e}")
             raise

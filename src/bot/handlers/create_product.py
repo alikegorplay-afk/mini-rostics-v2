@@ -4,7 +4,7 @@ from typing import Dict, Any
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from aiogram import Router, F
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message
 from aiogram.filters import Command 
 from aiogram.fsm.context import FSMContext
 

@@ -16,7 +16,8 @@ async def set_command(bot: Bot):
         BotCommand(command="addprod", description="Добавить продукты"),
         BotCommand(command="start", description="Начать всё сначала"),
         BotCommand(command="cancel", description="Сброс всех состояний"),
-        BotCommand(command="help", description="Получить справку")
+        BotCommand(command="help", description="Получить справку"),
+        BotCommand(command="report", description="Получить актуальный отчёт")
     ]
     await bot.set_my_commands(command)
 

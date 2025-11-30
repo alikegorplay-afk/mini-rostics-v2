@@ -27,10 +27,7 @@ async def main():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
         
     app.include_router(get_router(Session))
-    if core.DEBUG:
-        config = uvicorn.Config(app)
-    else:
-        config = uvicorn.Config(app, "0.0.0.0", port=8000)
+    config = uvicorn.Config(app, "127.0.0.1", port=8000)
     server = uvicorn.Server(config)
     await asyncio.gather(
         run_bot(Session),

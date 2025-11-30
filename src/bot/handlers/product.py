@@ -1,4 +1,3 @@
-from urllib.parse import urlparse
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from aiogram import Router

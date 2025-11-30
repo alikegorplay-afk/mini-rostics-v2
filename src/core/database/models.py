@@ -31,7 +31,7 @@ class Product(Base):
     poster: Mapped[str] = mapped_column(String(1024))
     price: Mapped[float] = mapped_column(Float())
     count: Mapped[int] = mapped_column(Integer())
-    description: Mapped[str] = mapped_column(Text()) 
+    description: Mapped[str] = mapped_column(Text())
     
     def as_dict(self):
         return {

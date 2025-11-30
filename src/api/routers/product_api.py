@@ -99,7 +99,6 @@ def prod_router_init(session_maker: async_sessionmaker):
     @router.post("/products")
     async def get_products(ids: List[int]):
         try: 
-            print(ids)
             return {
                 'ok': True,
                 'result': await api.get_products(ids)

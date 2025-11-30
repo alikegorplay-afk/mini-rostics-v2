@@ -38,7 +38,7 @@ f"""ID заказа <b>{order.id}</b>
 Итоговая цена заказа <b>{total_price} руб.</b>\n
 В заказ входят такие продукты как:\n
 {'\n'.join(
-    [f"{x.id}. {x.title} - {x.price} руб" for x in items]
+    [f"{x.id} X {x.title} - {x.price} руб" for x in items]
 )}
 """
 )

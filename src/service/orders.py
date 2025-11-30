@@ -55,10 +55,8 @@ class OrderProductService:
                         logger.warning(f"Не удалось найти заказ по ID {order.id}")
                         continue
                     summa += order_sum
-                
-                
-                        
-            df = pd.DataFrame(data)
+                    
+            df = pd.DataFrame(data).style.apply(lambda x: ['text-align: center' for _ in x], subset=['ID'])          
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
                 executor = self.executer,

@@ -77,6 +77,9 @@ class OrderProductService:
         wb = openpyxl.load_workbook(REPORT_PATH)
         ws = wb.active
         
+        for row in (ws[f'A{x}'] for x in range(ws.max_row + 1)):
+            row.alignment = Alignment(horizontal='center')
+        
         last_row = ws.max_row + 2
         ws[f'A{last_row}'] = f"Выручка: {revenue} ₽"
         

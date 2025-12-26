@@ -2,9 +2,112 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini-Rostics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>Mini-Rostics — Хрустящая курочка с доставкой в Нюрбинском улусе | Заказ за 30 минут!</title>
+    
+    <!-- Основные мета-теги -->
+    <meta name="description" content="🔥 Горячая курочка с доставкой в Нюрбинском улусе! Крылышки, бургеры, картофель фри. Закажи в Хорула (Сайылык) с 12:00 до 20:00. Доставка 30 минут или самовывоз.">
+    <meta name="keywords" content="доставка еды Нюрбинский улус, курица Хорула, фастфуд Сайылык, крылышки, бургеры, картофель фри, заказать еду на дом, быстрая еда Нюрба">
+    
+    <!-- Open Graph для соцсетей -->
+    <meta property="og:title" content="Mini-Rostics — Курочка с доставкой в Нюрбинском улусе">
+    <meta property="og:description" content="Доставка горячей курочки в Хорула (Сайылык). Работаем с 12:00 до 20:00. Заказ за 30 минут!">
+    <meta property="og:url" content="https://mini-rostics.ru">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mini-Rostics">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:image" content="https://mini-rostics.ru/static/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mini-Rostics — Курочка в Нюрбинском улусе">
+    <meta name="twitter:description" content="Доставка вкусной курочки в Хорула. Работаем ежедневно 12:00-20:00">
+    
+    <!-- Автор и копирайт -->
+    <meta name="author" content="Mini-Rostics">
+    <meta name="copyright" content="© 2025 Mini-Rostics. Все права защищены.">
+    
+    <!-- Фавиконы для разных устройств -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/static/favicon-16x16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#e31837">
+    
+    <!-- Основные стили -->
     <link rel="stylesheet" href="/static/style.css">
+    
+    <!-- Предзагрузка критических ресурсов -->
+    <link rel="preload" href="/static/style.css" as="style">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//maps.googleapis.com">
+    
+    <!-- Каноническая ссылка -->
+    <link rel="canonical" href="https://mini-rostics.ru">
+    
+    <!-- Дополнительные мета-теги -->
+    <meta name="theme-color" content="#E31837">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="format-detection" content="telephone=yes">
+    <meta name="geo.region" content="RU-SA">
+    <meta name="geo.placename" content="Хорула, Нюрбинский улус, Республика Саха (Якутия)">
+    <meta name="geo.position" content="63.284722;118.331944">
+    <meta name="ICBM" content="63.284722, 118.331944">
+    
+    <!-- Для мобильных устройств -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mini-Rostics">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Для браузера Edge/IE -->
+    <meta name="msapplication-TileColor" content="#e31837">
+    <meta name="msapplication-config" content="/static/browserconfig.xml">
+    
+    <!-- Schema.org микроразметка -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FoodEstablishment",
+        "@id": "https://mini-rostics.ru/#restaurant",
+        "name": "Mini-Rostics",
+        "image": "https://mini-rostics.ru/static/logo.png",
+        "description": "Доставка вкусной хрустящей курочки и фастфуда в Нюрбинском улусе",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Хорула (Сайылык)",
+            "addressLocality": "Нюрбинский улус",
+            "addressRegion": "Республика Саха (Якутия)",
+            "postalCode": "678465",
+            "addressCountry": "RU"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 63.284722,
+            "longitude": 118.331944
+        },
+        "priceRange": "₽₽",
+        "servesCuisine": ["Фастфуд", "Курица", "Американская кухня"],
+        "openingHours": "Mo-Su 12:00-20:00",
+        "telephone": "+7-XXX-XXX-XX-XX",
+        "url": "https://mini-rostics.ru",
+        "menu": "https://mini-rostics.ru/menu",
+        "acceptsReservations": "false",
+        "potentialAction": {
+            "@type": "OrderAction",
+            "target": "https://mini-rostics.ru/order"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "127",
+            "bestRating": "5"
+        }
+    }
+    </script>
+</head>
 </head>
 <body>
     <!-- Декоративные элементы -->

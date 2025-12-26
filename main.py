@@ -6,7 +6,6 @@ from src.api import create_app
 from src.bot.bot import main as run_bot
 from src.core.database.models import Base
 from src.core.const import DATABASE_URL
-from src.core import config as core
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from fastapi.staticfiles import StaticFiles
@@ -19,6 +18,12 @@ STATIC_DIR = os.path.join(BASE_DIR, "src", "frontend", "static")
 
 
 async def main():
+    for path in ["data", "data/database", "data/img"]:
+        try:
+            os.mkdir(path)
+        except Exception as e:
+            continue
+        
     engine = create_async_engine(DATABASE_URL)
     Session = async_sessionmaker(engine)
     async with engine.begin() as conn:

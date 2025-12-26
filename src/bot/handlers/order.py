@@ -8,6 +8,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from ...core.database.models import OrderStatus
 from ...managers.login_manager import UserManager
+from ...schemas.product import ProductUpdateSchema
 
 def create_manager(session_maker: async_sessionmaker[AsyncSession]):
     from ...managers import OrderManager
@@ -29,7 +30,15 @@ def init_order_router(session_maker: async_sessionmaker[AsyncSession], user_mana
         await call.message.delete()
         order = await api.get_order(order_id)
         ids = {x.product_id: x.count for x in order.items}
-        items = await product_api.get_products([x for x in ids.keys()])
+        
+        for id, values in ids.items():
+            prod = await product_api.get_product(id)
+            if not prod:
+                continue
+            
+            await product_api.update_product(ProductUpdateSchema(id = prod.id, count=prod.count - values))
+            
+        items = await product_api.get_products(list(ids.keys()))
         total_price = sum([x.price * ids[x.id] for x in items])
         await call.message.answer(
 (

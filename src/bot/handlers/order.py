@@ -78,7 +78,7 @@ f"""ID заказа <b>{order.id}</b>
 Итоговая цена заказа <b>{total_price} руб.</b>\n
 В заказ входят такие продукты как:\n
 {'\n'.join(
-    [f"{x.count} X {x.title} - {x.price * ids[x.id]} руб" for x in items]
+    [f"{x.count} X {x.title} - {x.price * ids[x.id]} руб" if x.count else f"{x.title} - НЕТ В НАЛИЧИИ" for x in items]
 )}
 """
                 ), reply_markup=InlineKeyboardMarkup(

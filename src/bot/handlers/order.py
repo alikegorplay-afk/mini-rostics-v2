@@ -112,6 +112,13 @@ f"""ID заказа <b>{order.id}</b>
                 await message.answer(f"Не найден заказ по ID {id}")
                 return
             
+            for id, values in {x.product_id: x.count for x in order.items}.items():
+                prod = await product_api.get_product(id)
+                if not prod:
+                    continue
+                
+                await product_api.update_product(ProductUpdateSchema(id = prod.id, count=prod.count - values))
+                
             await api.update_status(id)
             await message.answer("Заказ оплачен!")
         except ValueError:

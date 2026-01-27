@@ -84,9 +84,6 @@ class InactivityManager {
         // 1. Сбрасываем куки
         this.clearCookies();
         
-        // 2. Включаем камеру
-        this.enableCamera();
-        
         // 3. Скрываем модалку
         this.hideModal();
         
@@ -104,31 +101,6 @@ class InactivityManager {
         }
         
         console.log('Все куки сброшены');
-    }
-
-    async enableCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: true 
-            });
-            
-            // Создаем элемент для отображения видео
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.autoplay = true;
-            video.style.position = 'fixed';
-            video.style.top = '0';
-            video.style.left = '0';
-            video.style.width = '300px';
-            video.style.zIndex = '1001';
-            
-            document.body.appendChild(video);
-            
-            console.log('Камера активирована');
-            
-        } catch (error) {
-            console.error('Ошибка доступа к камере:', error);
-        }
     }
 }
 
